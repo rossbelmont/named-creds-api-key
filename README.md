@@ -104,7 +104,7 @@ Looking at the Value more closely, we see that the literal string `Client-ID` (f
 {!'Client-ID ' & $Credential.UnsplashCustomAuthScheme.MyClientId}
 ```
 
-If the `Client-ID` were abc123, this would be the resulting callout:
+If the `Client-ID` were `abc123`, this would be the resulting callout:
 
 ```
 GET https://api.unsplash.com/photos/random HTTP/1.1
@@ -116,7 +116,7 @@ Here's a view of how all the External Credential configuration comes together.
 ![The overall External Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Overall%20Ext%20Cred%20Config%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 #### API Keys without Formulas
-If a service has slightly simpler authentication, and the entire value of the header is the API key itself, then formulas are not needed (since there’s no concatenation or other text processing). The **Name** would be something like `X-API-Key` and the **Value** would be `$Credential.MyExtCred.APIKey`. Note that this requires an Authentication Parameter named `APIKey` is defined as part of a Permission Set Mapping to store the secret value.
+If a service has slightly simpler authentication, and the entire value of the header is the API key itself, then formulas are not needed (since there’s no concatenation or other text processing). The **Name** would be something like `X-API-Key` and the **Value** would be `$Credential.MyExtCred.APIKey`. Note that this requires an Authentication Parameter named `APIKey` is defined as part of a Permission Set Mapping to store the secret value. (See above.)
 
 ### Storing the Endpoint URL in the Named Credential
 Now that the trickier work of defining the External Credential is complete, an administrator can define the  **Named Credential**  that references it. The Named Credential stores the endpoint URL, as well as a few other parameters that may need to be adjusted for a particular endpoint. 
