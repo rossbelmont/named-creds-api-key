@@ -49,7 +49,7 @@ For Custom authentication protocols, there are only a few configuration values t
 - Set the **Authentication Protocol** to Custom.
 - Click **Save**.
 
-https://share.cleanshot.com/Oei8Qw
+![ExtCred](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Ext%20Cred%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 We’ll use the developer Name in one of the steps below, and you’ll see the Label in the very last step.
 
