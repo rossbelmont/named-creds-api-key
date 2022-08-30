@@ -49,7 +49,7 @@ For Custom authentication protocols, there are only a few configuration values t
 - Set the **Authentication Protocol** to Custom.
 - Click **Save**.
 
-![ExtCred](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Ext%20Cred%20for%20API%20Key%202022-08-27.jpeg?raw=true)
+![Creating the External Credential container](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Ext%20Cred%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 We’ll use the developer Name in one of the steps below, and you’ll see the Label in the very last step.
 
@@ -71,13 +71,13 @@ The stock photo service refers to the API key as a `Client-ID`, so we create a P
 - Paste in the API key as the **Value** of the Authentication Parameter.
 - Click **Save**.
 
-https://share.cleanshot.com/Oei8Qw
+![Storing the API key as an Authentication Parameter](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Storing%20API%20Key%20as%20Auth%20Param%202022-08-27.jpeg?raw=true)
 
 There’s one other aspect of encrypted storage administrators need to understand. The encrypted secrets are stored in a Standard Object called **User External Credentials**, and any user that will make callouts needs Create, Read, Update, and Delete access to this object. The record manipulation is managed by the platform—users can’t navigate a record detail page for a User External Credential and view raw tokens—but object access still needs to be explicitly granted. 
 
 Technically, this is independent of any individual Named Credential. After you’ve created all the relevant Named Credentials, make sure to open up access to this object via Permission Sets or Profiles before your non-administrative users need to test/use this functionality.
 
-SCREENSHOT
+![Allow access to User External Credential object](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Grant%20UCE%20Access%202022-08-23.gif?raw=true)
 
 Using a data object for this token storage allows higher volumes of tokens to be stored by the platform, which is critical when using Per User access with the OAuth protocol and each user logs into the external system’s UI separately. Each login yields a separate token, yielding tens of thousands of tokens in a large enterprise.
 
@@ -96,6 +96,8 @@ Our stock photo example combines both:
 - Leave the **Sequence Number** set to the default, since we don’t need to worry about the order of headers in this case.
 - Click **Save**.
 
+![Defining the Custom Header](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Custom%20Header%20for%20API%20Key%202022-08-27.jpeg?raw=true)
+
 Looking at the Value more closely, we see that the literal string `Client-ID` (followed by a space) is concatenated with the API key:
 
 ```
@@ -108,6 +110,10 @@ If the `Client-ID` were abc123, this would be the resulting callout:
 GET https://api.unsplash.com/photos/random HTTP/1.1
 Authorization: Client-ID abc123
 ```
+
+Here's a view of how all the External Credential configuration comes together.
+
+![The overall External Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Overall%20Ext%20Cred%20Config%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 #### API Keys without Formulas
 If a service has slightly simpler authentication, and the entire value of the header is the API key itself, then formulas are not needed (since there’s no concatenation or other text processing). The **Name** would be something like `X-API-Key` and the **Value** would be `$Credential.MyExtCred.APIKey`. Note that this requires an Authentication Parameter named `APIKey` is defined as part of a Permission Set Mapping to store the secret value.
@@ -123,5 +129,7 @@ Now that the trickier work of defining the External Credential is complete, an a
 - For this example, it’s important to *uncheck* the **Generate Authorization Header** setting. Instead, this will be handled by the Custom Header we defined in the prior steps.
 - Similar to the above, it’s important to *check* the **Allow Formulas in HTTP Header** setting so that the formula gets evaluated.
 - Click **Save**.
+
+![Defining the Named Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Named%20Cred%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 At this point, a callout using our Named Credential will return successfully, since it has the correct `Authorization` header. If the tokens expire or the URL changes, no changes to Apex code will be needed. In addition to Apex,the credential can be used in no-code tools like [External Services](https://help.salesforce.com/s/articleView?id=sf.external_services.htm&type=5) that provide [integration with Flow](https://help.salesforce.com/s/articleView?id=sf.enhanced_external_services_example_create_flow.htm&type=5).
