@@ -116,19 +116,36 @@ Here's a view of how all the External Credential configuration comes together.
 ![The overall External Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Overall%20Ext%20Cred%20Config%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 #### Basic Authentication
-One of the many options provided by formulas is the capability to build an `Authorization` header that works with HTTP's [Basic authentication protocol](https://en.wikipedia.org/wiki/Basic_access_authentication). That protocol uses Base64 encoding, which can be accomplished with the help of the `BASE64` function.
+HTTP's [Basic authentication protocol](https://en.wikipedia.org/wiki/Basic_access_authentication) also uses the `Authorization` header, along with a username and password combined using base64 encoding. The username and password are concatenated with a colon (`:`), then encoded. Here's an example:
+
+`myUsername:myPassword` → base64 encoding applied ⇒ `bXlVc2VybmFtZTpteVBhc3N3b3JkCg==`
+
+The reverse is also possible:
+
+`bXlVc2VybmFtZTpteVBhc3N3b3JkCg==` → base64 data decoded ⇒ `myUsername:myPassword`
+
+_**Important security note**: Because base64-encoded information can be decoded by anyone at any point, it is recommended to avoid the Basic authentication protocol when possible. Other systems use algorithms like SHA256, which are specifically designed to take a secret string and scramble it in a way that cannot be reversed. If you have no other option, be sure to handle any secret values carefully._
+
+We'll look at the example of GitHub, which supports Basic authentication for some operations using what they call a [personal access token](https://docs.github.com/en/rest/overview/other-authentication-methods#via-oauth-and-personal-access-tokens). The token is treated like a password, in the sense that it is concatenated with the username and a colon (`:`), encoded via base64, and placed in the `Authorization` header as follows:
+
+```
+GET https://api.github.com/gists HTTP/1.1
+Authorization: Basic bXlVc2VybmFtZTpteVBhc3N3b3JkCg==
+```
+
+This call would return all the Gists created by the authenticated user. To build something like this using Named Credentials, you'll need to base64-encode the username:password to the service in question, then stored that encoded secret as an Authentication Parameter.
 
 Step through the same fundamental process above:
 
 - Create an External Credential with a developer Name of `BasicAuth`. (Refer to the first section above to understand the steps.)
-- Define two Authentication Parameters in the Permission Set Mapping, for example `UsernameParam` and `PasswordParam`. (Refer to the second section above to understand the steps.)
+- Define an Authentication Parameter in the Permission Set Mapping with a Name like `EncodedSecretValue` and set its Value to the string rendered by the base64 encoder. (Refer to the second section above to see the steps in more detail.)
 - Use the following steps to define the `Authorization` header with a different formula. 
 
 With the External Credential in place, and the Authentication Parameters defined, you're ready to add a Custom Header with a formula matching what's required for the Basic authentication protocol.
 
 - When viewing the new External Credential, click **New** under **Custom Headers**.
 - Enter the **Name** of the header as required by the external service (`Authorization`, in this case). 
-- Enter the following **Value**:`{!'Basic ' & BASE64($Credential.BasicAuth.UsernameParam & ":" & $Credential.BasicAuth.PasswordParam)}`
+- Enter the following **Value**:`{!'Basic ' & $Credential.BasicAuth.EncodedSecretValue}`
 - Leave the **Sequence Number** set to the default, or set the order explicitly if you're concerned about collisions.
 - Click **Save**.
 
