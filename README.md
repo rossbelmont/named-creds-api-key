@@ -92,7 +92,7 @@ Our stock photo example combines both:
 
 - When viewing the External Credential, click **New** under **Custom Headers**.
 - Enter the **Name** of the header as required by the external service (`Authorization`, in this case). 
-- Enter the following **Value**:`{!’Client-ID ' & $Credential.UnsplashCustomAuthScheme.MyClientId}`
+- Enter the following **Value**:`{!'Client-ID ' & $Credential.UnsplashCustomAuthScheme.MyClientId}`
 - Leave the **Sequence Number** set to the default, since we don’t need to worry about the order of headers in this case.
 - Click **Save**.
 
@@ -114,6 +114,23 @@ Authorization: Client-ID abc123
 Here's a view of how all the External Credential configuration comes together.
 
 ![The overall External Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Overall%20Ext%20Cred%20Config%20for%20API%20Key%202022-08-27.jpeg?raw=true)
+
+#### Basic Authentication
+One of the many options provided by formulas is the capability to build an `Authorization` header that works with HTTP's Basic authentication protocol. That protocol uses Base64 encoding, which can be accomplished with the help of the `BASE64` function.
+
+Step through the same fundamental process above:
+
+- Create an External Credential with a developer Name of `BasicAuth`. (Refer to the first section above to understand the steps.)
+- Define two Authentication Parameters in the Permission Set Mapping, for example `UsernameParam` and `PasswordParam`. (Refer to the second section above to understand the steps.)
+- Use the following steps to define the `Authorization` header with a different formula. 
+
+With the External Credential in place, and the Authentication Parameters defined, you're ready to add a Custom Header with a formula matching what's required for the Basic authentication protocol.
+
+- When viewing the new External Credential, click **New** under **Custom Headers**.
+- Enter the **Name** of the header as required by the external service (`Authorization`, in this case). 
+- Enter the following **Value**:`{!'Basic ' & BASE64($Credential.BasicAuth.UsernameParam & ":" & $Credential.BasicAuth.PasswordParam)}`
+- Leave the **Sequence Number** set to the default, or set the order explicitly if you're concerned about collisions.
+- Click **Save**.
 
 #### API Keys without Formulas
 If a service has slightly simpler authentication, and the entire value of the header is the API key itself, then formulas are not needed (since there’s no concatenation or other text processing). The **Name** would be something like `X-API-Key` and the **Value** would be `$Credential.MyExtCred.APIKey`. Note that this requires an Authentication Parameter named `APIKey` is defined as part of a Permission Set Mapping to store the secret value. (See above.)
