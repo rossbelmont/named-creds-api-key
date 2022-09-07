@@ -116,7 +116,7 @@ Here's a view of how all the External Credential configuration comes together.
 ![The overall External Credential](https://github.com/rossbelmont/named-creds-api-key/blob/main/screenshots/Overall%20Ext%20Cred%20Config%20for%20API%20Key%202022-08-27.jpeg?raw=true)
 
 #### Basic Authentication
-One of the many options provided by formulas is the capability to build an `Authorization` header that works with HTTP's Basic authentication protocol. That protocol uses Base64 encoding, which can be accomplished with the help of the `BASE64` function.
+One of the many options provided by formulas is the capability to build an `Authorization` header that works with HTTP's [Basic authentication protocol](https://en.wikipedia.org/wiki/Basic_access_authentication). That protocol uses Base64 encoding, which can be accomplished with the help of the `BASE64` function.
 
 Step through the same fundamental process above:
 
