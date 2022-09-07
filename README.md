@@ -142,7 +142,7 @@ Tip: There are many [free](https://www.base64encoder.io/) [tools](https://codebe
 bXlVc2VybmFtZTpteVBhc3N3b3JkCg==
 ```
 
-Substitute `myUsername` with the actual username, and `myPassword` with the actual password. The string on the second line (the output in bold) is what you'll copy into the parameter value.
+Substitute `myUsername` with the actual username, and `myPassword` with the actual password. The string on the second line (the output) is what you'll copy into the parameter value.
 
 Once you've sorted that out, you'll step through the same fundamental process above:
 
