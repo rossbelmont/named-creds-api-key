@@ -133,14 +133,13 @@ GET https://api.github.com/gists HTTP/1.1
 Authorization: Basic bXlVc2VybmFtZTpteVBhc3N3b3JkCg==
 ```
 
-This call would return all the Gists created by the authenticated user. To build something like this using Named Credentials, you'll need to use formulas to handle the base64 encoding. 
-
+This call would return all the Gists created by the authenticated user. To build this using Named Credentials, do the following: 
 
 - Create an External Credential with a developer Name of `BasicAuth`. (The first main section above walks through those steps.)
 - Define two Authentication Parameters in the Permission Set Mapping, for example `Username` and `Password`. (The second main section above shows those steps in more detail.)
 - Define the `Authorization` header with a different formula (see below, after the next Tip). 
 
-Tip: Base64 encoding is often used to convert binary data to a text string for easier transfer between systems. When binary data is stored in some databases, you may see it referred to as a BLOB (**B**inary **L**arge **OB**ject). Fortunately, we can use two formulas (`BLOB` and `BASE64ENCODE`) together to take the secret values, treat them as binary data, then encode the binary data via base64.
+Tip: Base64 encoding is often used to convert binary data to a text string for easier transfer between systems. When binary data is stored in some databases, you may see it referred to as a BLOB (**B**inary **L**arge **OB**ject). Fortunately, we can use two formulas (`BLOB` and `BASE64ENCODE`) together to take the secret values, treat them as binary data, then encode that binary data via base64.
 
 So again, with the External Credential in place, and the Authentication Parameters defined, you're ready to add a Custom Header with a formula matching what's required for the Basic authentication protocol.
 
@@ -149,6 +148,8 @@ So again, with the External Credential in place, and the Authentication Paramete
 - Enter the following **Value**:`{!'Basic ' & BASE64ENCODE(BLOB($Credential.BasicAuth.Username & ':' & $Credential.BasicAuth.Password))}`
 - Leave the **Sequence Number** set to the default, or set the order explicitly if you're concerned about collisions.
 - Click **Save**.
+
+We're referring to the second Authentication Parameter as the `Password`, but in the case of GitHub specifically, you'd need to use the personal access token as the parameter value—not the password to your actual user account. That said, most systems that use Basic authentication don't take that approach, and the actual password would be used instead.
 
 #### API Keys without Formulas
 If a service has slightly simpler authentication, and the entire value of the header is the API key itself, then formulas are not needed (since there’s no concatenation or other text processing). The **Name** would be something like `X-API-Key` and the **Value** would be `$Credential.MyExtCred.APIKey`. Note that this requires an Authentication Parameter named `APIKey` is defined as part of a Permission Set Mapping to store the secret value. (See above.)
