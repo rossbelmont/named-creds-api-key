@@ -133,28 +133,20 @@ GET https://api.github.com/gists HTTP/1.1
 Authorization: Basic bXlVc2VybmFtZTpteVBhc3N3b3JkCg==
 ```
 
-This call would return all the Gists created by the authenticated user. To build something like this using Named Credentials, you'll need to base64-encode the `username:password` to the service in question, then stored that encoded secret as an Authentication Parameter.
+This call would return all the Gists created by the authenticated user. To build something like this using Named Credentials, you'll need to use formulas to handle the base64 encoding. 
 
-Tip: There are many [free](https://www.base64encoder.io/) [tools](https://codebeautify.org/base64-encode) you can use to base64-encode the string. You can also use the command line on a Mac or Linux system as follows:
-
-```
-% echo myUsername:myPassword | base64
-bXlVc2VybmFtZTpteVBhc3N3b3JkCg==
-```
-
-Substitute `myUsername` with the actual username, and `myPassword` with the actual password. The string on the second line (the output) is what you'll copy into the parameter value.
-
-Once you've sorted that out, you'll step through the same fundamental process above:
 
 - Create an External Credential with a developer Name of `BasicAuth`. (The first main section above walks through those steps.)
-- Define an Authentication Parameter in the Permission Set Mapping with a Name like `EncodedSecretValue` and set its Value to the string rendered by the base64 encoder. (The second main section above shows those steps in more detail.)
-- Define the `Authorization` header with a different formula (see below). 
+- Define two Authentication Parameters in the Permission Set Mapping, for example `Username` and `Password`. (The second main section above shows those steps in more detail.)
+- Define the `Authorization` header with a different formula (see below, after the next Tip). 
 
-With the External Credential in place, and the Authentication Parameter defined, you're ready to add a Custom Header with a formula matching what's required for the Basic authentication protocol.
+Tip: Base64 encoding is often used to convert binary data to a text string for easier transfer between systems. When binary data is stored in some databases, you may see it referred to as a BLOB (**B**inary **L**arge **OB**ject). Fortunately, we can use two formulas (`BLOB` and `BASE64ENCODE`) together to take the secret values, treat them as binary data, then encode the binary data via base64.
+
+So again, with the External Credential in place, and the Authentication Parameters defined, you're ready to add a Custom Header with a formula matching what's required for the Basic authentication protocol.
 
 - When viewing the new External Credential, click **New** under **Custom Headers**.
 - Enter the **Name** of the header as required by the external service (`Authorization`, in this case). 
-- Enter the following **Value**:`{!'Basic ' & $Credential.BasicAuth.EncodedSecretValue}`
+- Enter the following **Value**:`{!'Basic ' & BASE64ENCODE(BLOB($Credential.BasicAuth.Username & ':' & $Credential.BasicAuth.Password))}`
 - Leave the **Sequence Number** set to the default, or set the order explicitly if you're concerned about collisions.
 - Click **Save**.
 
